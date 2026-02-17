@@ -1,6 +1,7 @@
 {
   "name": "ary-sistema-backend",
   "version": "1.0.0",
+  "private": true,
   "type": "module",
   "main": "src/server.js",
   "scripts": {
@@ -15,5 +16,8 @@
     "morgan": "^1.10.0",
     "pg": "^8.12.0",
     "sequelize": "^6.37.3"
+  },
+  "engines": {
+    "node": ">=18 <23"
   }
 }
