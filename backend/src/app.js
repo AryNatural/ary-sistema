@@ -36,3 +36,7 @@ app.get("/", (req, res) => {
 app.get("/api/test", (req, res) => {
   res.json({ ok: true, message: "API funcionando ✅" });
 });
+
+app.get("/api", (req, res) => {
+  res.json({ ok: true, service: "ary-sistema-backend" });
+});
