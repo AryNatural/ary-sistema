@@ -26,4 +26,13 @@ app.get("/health", (req, res) => {
 });
 
 
+
 export default app;
+
+app.get("/", (req, res) => {
+  res.send("ARY-SISTEMA API ONLINE ✅");
+});
+
+app.get("/api/test", (req, res) => {
+  res.json({ ok: true, message: "API funcionando ✅" });
+});
