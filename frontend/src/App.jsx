@@ -59,4 +59,33 @@ export default function App() {
       </footer>
     </div>
   );
+
+}
+import { useEffect, useState } from "react";
+import { API_URL, apiGet } from "./api";
+
+export default function App() {
+  const [health, setHealth] = useState(null);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    apiGet("/health")
+      .then(setHealth)
+      .catch((e) => setError(e.message));
+  }, []);
+
+  return (
+    <div style={{ fontFamily: "system-ui", padding: 24 }}>
+      <h1>Ary Sistema — Frontend</h1>
+      <p><b>API:</b> {API_URL}</p>
+
+      {!health && !error && <p>Cargando /health...</p>}
+      {error && <pre style={{ color: "crimson" }}>{error}</pre>}
+      {health && (
+        <pre style={{ background: "#111", color: "#0f0", padding: 12, borderRadius: 8 }}>
+          {JSON.stringify(health, null, 2)}
+        </pre>
+      )}
+    </div>
+  );
 }
