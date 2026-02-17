@@ -1,0 +1,9 @@
+﻿DB_DIALECT=postgres
+DB_HOST=db.xxxxx.supabase.co
+DB_NAME=postgres
+DB_USER=postgres
+DB_PASS=your_password
+DB_PORT=5432
+JWT_SECRET=change_me
+CORS_ORIGIN=https://sistema.arynaturalhairline.com
+PORT=5000
