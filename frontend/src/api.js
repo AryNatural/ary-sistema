@@ -1,8 +1,15 @@
-﻿export const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+export const API_URL = import.meta.env.VITE_API_URL;
 
+export async function apiGet(path) {
+  const res = await fetch(`${API_URL}${path}`, {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+  });
 
-export async function healthCheck() {
-  const res = await fetch(`${API_URL}/health`);
-  if (!res.ok) throw new Error(`Health falló: ${res.status}`);
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    throw new Error(`API error ${res.status}: ${text}`);
+  }
+
   return res.json();
 }
