@@ -25,5 +25,9 @@ const HOST = "0.0.0.0";
     process.exit(1);
   }
 })();
+if (process.env.NODE_ENV !== "production") {
+  await sequelize.sync();
+}
+
 
 
