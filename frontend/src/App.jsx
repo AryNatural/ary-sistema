@@ -1,237 +1,201 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { api } from "./api";
 
 export default function App() {
-  const [items, setItems] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [health, setHealth] = useState(null);
+
+  // Register
+  const [rName, setRName] = useState("");
+  const [rEmail, setREmail] = useState("");
+  const [rPass, setRPass] = useState("");
+
+  // Login
+  const [lEmail, setLEmail] = useState("");
+  const [lPass, setLPass] = useState("");
+
+  // Result
+  const [user, setUser] = useState(null);
+  const [token, setToken] = useState("");
   const [msg, setMsg] = useState("");
   const [error, setError] = useState("");
 
-  const [form, setForm] = useState({
-    name: "",
-    sku: "",
-    price: 0,
-    stock: 0,
-    active: true,
-  });
-
-  const [editingId, setEditingId] = useState(null);
-
-  const title = useMemo(() => (editingId ? "Editar producto" : "Crear producto"), [editingId]);
-
-  async function load() {
-    setLoading(true);
-    setError("");
-    try {
-      const data = await api("/products");
-      setItems(data);
-    } catch (e) {
-      setError(e.message);
-    } finally {
-      setLoading(false);
-    }
-  }
-
   useEffect(() => {
-    load();
+    api("/health")
+      .then((d) => setHealth(d))
+      .catch((e) => setError(e.message));
   }, []);
 
-  function resetForm() {
-    setEditingId(null);
-    setForm({ name: "", sku: "", price: 0, stock: 0, active: true });
+  function clearAlerts() {
+    setMsg("");
+    setError("");
   }
 
-  async function onSubmit(e) {
+  async function register(e) {
     e.preventDefault();
-    setMsg("");
-    setError("");
+    clearAlerts();
 
     try {
-      if (!form.name || form.name.trim().length < 2) {
-        setError("El nombre es requerido (mín 2 caracteres)");
-        return;
-      }
+      const data = await api("/auth/register", {
+        method: "POST",
+        body: JSON.stringify({
+          name: rName,
+          email: rEmail,
+          password: rPass,
+        }),
+      });
 
-      if (editingId) {
-        await api(`/products/${editingId}`, {
-          method: "PUT",
-          body: JSON.stringify(form),
-        });
-        setMsg("Producto actualizado ✅");
-      } else {
-        await api("/products", {
-          method: "POST",
-          body: JSON.stringify(form),
-        });
-        setMsg("Producto creado ✅");
-      }
-
-      resetForm();
-      await load();
+      setUser(data.user);
+      setToken(data.token);
+      localStorage.setItem("ary_token", data.token);
+      setMsg("✅ Registro exitoso. Token guardado.");
     } catch (e) {
       setError(e.message);
     }
   }
 
-  function startEdit(p) {
-    setMsg("");
-    setError("");
-    setEditingId(p.id);
-    setForm({
-      name: p.name ?? "",
-      sku: p.sku ?? "",
-      price: Number(p.price ?? 0),
-      stock: Number(p.stock ?? 0),
-      active: Boolean(p.active),
-    });
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }
+  async function login(e) {
+    e.preventDefault();
+    clearAlerts();
 
-  async function remove(id) {
-    const ok = confirm("¿Eliminar este producto?");
-    if (!ok) return;
-
-    setMsg("");
-    setError("");
     try {
-      await api(`/products/${id}`, { method: "DELETE" });
-      setMsg("Producto eliminado ✅");
-      await load();
+      const data = await api("/auth/login", {
+        method: "POST",
+        body: JSON.stringify({
+          email: lEmail,
+          password: lPass,
+        }),
+      });
+
+      setUser(data.user);
+      setToken(data.token);
+      localStorage.setItem("ary_token", data.token);
+      setMsg("✅ Login exitoso. Token guardado.");
     } catch (e) {
       setError(e.message);
     }
+  }
+
+  function logout() {
+    localStorage.removeItem("ary_token");
+    setUser(null);
+    setToken("");
+    setMsg("✅ Sesión cerrada.");
+    setError("");
   }
 
   return (
-    <div style={{ fontFamily: "system-ui", padding: 20, maxWidth: 1000, margin: "0 auto" }}>
-      <h1>Ary Sistema — Productos</h1>
+    <div style={{ fontFamily: "system-ui", padding: 20, maxWidth: 980, margin: "0 auto" }}>
+      <h1>ARY Sistema — Prueba de Auth</h1>
 
-      <div style={{ margin: "12px 0" }}>
-        {msg && <div style={{ padding: 10, background: "#eaffea", border: "1px solid #b7f5b7" }}>{msg}</div>}
-        {error && <div style={{ padding: 10, background: "#ffecec", border: "1px solid #ffbdbd" }}>{error}</div>}
+      <div style={{ marginBottom: 12 }}>
+        <b>/health:</b>{" "}
+        {health ? (
+          <span style={{ color: "green" }}>OK ✅</span>
+        ) : (
+          <span style={{ opacity: 0.8 }}>Cargando...</span>
+        )}
       </div>
 
-      <section style={{ padding: 16, border: "1px solid #ddd", borderRadius: 12 }}>
-        <h2 style={{ marginTop: 0 }}>{title}</h2>
+      {msg && (
+        <div style={{ padding: 10, background: "#eaffea", border: "1px solid #b7f5b7", borderRadius: 8 }}>
+          {msg}
+        </div>
+      )}
+      {error && (
+        <div style={{ padding: 10, background: "#ffecec", border: "1px solid #ffbdbd", borderRadius: 8 }}>
+          ❌ {error}
+        </div>
+      )}
 
-        <form onSubmit={onSubmit} style={{ display: "grid", gap: 10, gridTemplateColumns: "repeat(4, 1fr)" }}>
-          <div style={{ gridColumn: "span 2" }}>
-            <label>Nombre</label>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginTop: 16 }}>
+        {/* REGISTER */}
+        <section style={{ padding: 16, border: "1px solid #ddd", borderRadius: 12 }}>
+          <h2 style={{ marginTop: 0 }}>Registrar usuario</h2>
+
+          <form onSubmit={register} style={{ display: "grid", gap: 10 }}>
             <input
-              value={form.name}
-              onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
-              placeholder="Ej: ARY-ONE 250ml"
-              style={{ width: "100%", padding: 10 }}
+              value={rName}
+              onChange={(e) => setRName(e.target.value)}
+              placeholder="Nombre"
+              style={{ padding: 10 }}
+              required
             />
+            <input
+              value={rEmail}
+              onChange={(e) => setREmail(e.target.value)}
+              placeholder="Email"
+              type="email"
+              style={{ padding: 10 }}
+              required
+            />
+            <input
+              value={rPass}
+              onChange={(e) => setRPass(e.target.value)}
+              placeholder="Password"
+              type="password"
+              style={{ padding: 10 }}
+              required
+            />
+            <button style={{ padding: 10, cursor: "pointer" }}>Crear cuenta</button>
+          </form>
+        </section>
+
+        {/* LOGIN */}
+        <section style={{ padding: 16, border: "1px solid #ddd", borderRadius: 12 }}>
+          <h2 style={{ marginTop: 0 }}>Login</h2>
+
+          <form onSubmit={login} style={{ display: "grid", gap: 10 }}>
+            <input
+              value={lEmail}
+              onChange={(e) => setLEmail(e.target.value)}
+              placeholder="Email"
+              type="email"
+              style={{ padding: 10 }}
+              required
+            />
+            <input
+              value={lPass}
+              onChange={(e) => setLPass(e.target.value)}
+              placeholder="Password"
+              type="password"
+              style={{ padding: 10 }}
+              required
+            />
+            <button style={{ padding: 10, cursor: "pointer" }}>Entrar</button>
+          </form>
+        </section>
+      </div>
+
+      {/* RESULT */}
+      <section style={{ marginTop: 16, padding: 16, border: "1px solid #ddd", borderRadius: 12 }}>
+        <h2 style={{ marginTop: 0 }}>Resultado</h2>
+
+        <div style={{ display: "grid", gap: 10 }}>
+          <div>
+            <b>Usuario:</b>
+            <pre style={{ background: "#f7f7f7", padding: 10, borderRadius: 8 }}>
+              {JSON.stringify(user, null, 2)}
+            </pre>
           </div>
 
           <div>
-            <label>SKU</label>
-            <input
-              value={form.sku}
-              onChange={(e) => setForm((f) => ({ ...f, sku: e.target.value }))}
-              placeholder="Ej: ARYONE250"
-              style={{ width: "100%", padding: 10 }}
-            />
+            <b>Token:</b>
+            <pre style={{ background: "#f7f7f7", padding: 10, borderRadius: 8, whiteSpace: "pre-wrap" }}>
+              {token || "(vacío)"}
+            </pre>
           </div>
 
-          <div>
-            <label>Activo</label>
-            <select
-              value={form.active ? "true" : "false"}
-              onChange={(e) => setForm((f) => ({ ...f, active: e.target.value === "true" }))}
-              style={{ width: "100%", padding: 10 }}
-            >
-              <option value="true">Sí</option>
-              <option value="false">No</option>
-            </select>
-          </div>
-
-          <div>
-            <label>Precio</label>
-            <input
-              type="number"
-              value={form.price}
-              onChange={(e) => setForm((f) => ({ ...f, price: Number(e.target.value) }))}
-              style={{ width: "100%", padding: 10 }}
-            />
-          </div>
-
-          <div>
-            <label>Stock</label>
-            <input
-              type="number"
-              value={form.stock}
-              onChange={(e) => setForm((f) => ({ ...f, stock: Number(e.target.value) }))}
-              style={{ width: "100%", padding: 10 }}
-            />
-          </div>
-
-          <div style={{ gridColumn: "span 2", display: "flex", gap: 10, alignItems: "end" }}>
-            <button type="submit" style={{ padding: "10px 14px", cursor: "pointer" }}>
-              {editingId ? "Guardar cambios" : "Crear"}
+          <div style={{ display: "flex", gap: 10 }}>
+            <button onClick={logout} style={{ padding: 10, cursor: "pointer" }}>
+              Cerrar sesión
             </button>
-            <button type="button" onClick={resetForm} style={{ padding: "10px 14px", cursor: "pointer" }}>
-              Limpiar
-            </button>
-            <button type="button" onClick={load} style={{ padding: "10px 14px", cursor: "pointer" }}>
-              Recargar
-            </button>
           </div>
-        </form>
+        </div>
       </section>
 
-      <section style={{ marginTop: 18 }}>
-        <h2>Listado</h2>
-
-        {loading ? (
-          <p>Cargando...</p>
-        ) : (
-          <div style={{ overflowX: "auto" }}>
-            <table style={{ width: "100%", borderCollapse: "collapse" }}>
-              <thead>
-                <tr>
-                  {["Nombre", "SKU", "Precio", "Stock", "Activo", "Acciones"].map((h) => (
-                    <th key={h} style={{ textAlign: "left", borderBottom: "1px solid #ddd", padding: 10 }}>
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {items.map((p) => (
-                  <tr key={p.id}>
-                    <td style={{ padding: 10, borderBottom: "1px solid #f0f0f0" }}>{p.name}</td>
-                    <td style={{ padding: 10, borderBottom: "1px solid #f0f0f0" }}>{p.sku ?? "-"}</td>
-                    <td style={{ padding: 10, borderBottom: "1px solid #f0f0f0" }}>{Number(p.price ?? 0)}</td>
-                    <td style={{ padding: 10, borderBottom: "1px solid #f0f0f0" }}>{Number(p.stock ?? 0)}</td>
-                    <td style={{ padding: 10, borderBottom: "1px solid #f0f0f0" }}>{p.active ? "Sí" : "No"}</td>
-                    <td style={{ padding: 10, borderBottom: "1px solid #f0f0f0", display: "flex", gap: 10 }}>
-                      <button onClick={() => startEdit(p)} style={{ cursor: "pointer" }}>
-                        Editar
-                      </button>
-                      <button onClick={() => remove(p.id)} style={{ cursor: "pointer" }}>
-                        Borrar
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-
-                {items.length === 0 && (
-                  <tr>
-                    <td colSpan={6} style={{ padding: 14 }}>
-                      No hay productos todavía.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </section>
+      <p style={{ marginTop: 12, opacity: 0.75 }}>
+        Nota: el token se guarda en <code>localStorage</code> como <code>ary_token</code>.
+      </p>
     </div>
   );
 }
-
-
-
