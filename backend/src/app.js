@@ -11,6 +11,7 @@ const app = express();
 app.use(helmet());
 app.use(express.json({ limit: "2mb" }));
 app.use(morgan("dev"));
+app.use("/products", productsRouter);
 
 
 const corsOrigin = process.env.CORS_ORIGIN || "*";
@@ -41,4 +42,5 @@ app.get("/api/test", (req, res) => {
 app.get("/api", (req, res) => {
   res.json({ ok: true, service: "ary-sistema-backend" });
 });
+
 
