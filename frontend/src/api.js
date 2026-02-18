@@ -1,8 +1,4 @@
-const API_URL = import.meta.env.VITE_API_URL;
-
-if (!API_URL) {
-  console.warn("Falta VITE_API_URL en variables de entorno");
-}
+export const API_URL = import.meta.env.VITE_API_URL;
 
 export async function api(path, options = {}) {
   const res = await fetch(`${API_URL}${path}`, {
@@ -17,6 +13,6 @@ export async function api(path, options = {}) {
     const msg = typeof data === "object" ? data?.error || "Error" : String(data);
     throw new Error(msg);
   }
-
   return data;
 }
+
