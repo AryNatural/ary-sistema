@@ -3,6 +3,9 @@ import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
 import productsRouter from "./routes/products.js";
+import authRoutes from "./routes-auth.js";
+...
+app.use("/auth", authRoutes);
 
 
 const app = express();
@@ -42,5 +45,6 @@ app.get("/api/test", (req, res) => {
 app.get("/api", (req, res) => {
   res.json({ ok: true, service: "ary-sistema-backend" });
 });
+
 
 
