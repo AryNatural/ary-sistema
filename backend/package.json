@@ -7,9 +7,7 @@
   "start": "node src/server.js",
   "migrate": "sequelize-cli db:migrate",
   "migrate:undo": "sequelize-cli db:migrate:undo"
-}
 
-    "seed": "sequelize-cli db:seed:all"
   },
   "dependencies": {
     "cors": "^2.8.5",
@@ -24,5 +22,6 @@
     "sequelize-cli": "^6.6.2"
   }
 }
+
 
 
