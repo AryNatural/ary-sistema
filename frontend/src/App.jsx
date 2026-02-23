@@ -19,7 +19,11 @@ export default function App() {
 
   // Result
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(localStorage.getItem("ary_token") || "");
+  const token = localStorage.getItem("ary_token");
+
+const list = await api("/products", {
+  headers: { Authorization: `Bearer ${token}` }
+});
   const [msg, setMsg] = useState("");
   const [error, setError] = useState("");
 
@@ -31,6 +35,7 @@ export default function App() {
   const [pMl, setPMl] = useState("");
   const [pCosto, setPCosto] = useState("");
   const [pPrecio, setPPrecio] = useState("");
+  
 
   useEffect(() => {
     (async () => {
@@ -367,3 +372,4 @@ const preStyle = {
   borderRadius: 10,
   overflowX: "auto",
 };
+
