@@ -7,7 +7,7 @@ const router = Router();
 
 function signToken(user) {
   const secret = process.env.JWT_SECRET;
-  if (!secret) throw new Error("Falta JWT_SECRET en variables de entorno.");
+  if (!secret) throw new Error("Falta JWT_SECRET en Railway.");
   return jwt.sign(
     { id: user.id, role: user.role, email: user.email },
     secret,
@@ -15,7 +15,6 @@ function signToken(user) {
   );
 }
 
-// POST /auth/register
 router.post("/register", async (req, res) => {
   try {
     const { name, email, password, role } = req.body || {};
@@ -36,18 +35,13 @@ router.post("/register", async (req, res) => {
     });
 
     const token = signToken(user);
-
-    return res.json({
-      user: { id: user.id, name: user.name, email: user.email, role: user.role },
-      token
-    });
+    return res.json({ user: { id: user.id, name: user.name, email: user.email, role: user.role }, token });
   } catch (err) {
     console.error(err);
     return res.status(500).json({ error: "Error registrando usuario" });
   }
 });
 
-// POST /auth/login
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body || {};
@@ -62,11 +56,7 @@ router.post("/login", async (req, res) => {
     if (!ok) return res.status(401).json({ error: "Credenciales inválidas" });
 
     const token = signToken(user);
-
-    return res.json({
-      user: { id: user.id, name: user.name, email: user.email, role: user.role },
-      token
-    });
+    return res.json({ user: { id: user.id, name: user.name, email: user.email, role: user.role }, token });
   } catch (err) {
     console.error(err);
     return res.status(500).json({ error: "Error haciendo login" });
