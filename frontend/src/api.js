@@ -1,17 +1,17 @@
 export const API_URL = import.meta.env.VITE_API_URL;
 
-// Helpers
-function authHeaders(token) {
-  return token ? { Authorization: `Bearer ${token}` } : {};
-}
+export async function api(path, options = {}) {
+  const token = localStorage.getItem("ary_token");
 
-async function request(path, options = {}) {
+  const headers = {
+    "Content-Type": "application/json",
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    ...(options.headers || {}),
+  };
+
   const res = await fetch(`${API_URL}${path}`, {
-    headers: {
-      "Content-Type": "application/json",
-      ...(options.headers || {}),
-    },
     ...options,
+    headers,
   });
 
   const contentType = res.headers.get("content-type") || "";
@@ -20,52 +20,10 @@ async function request(path, options = {}) {
     : await res.text();
 
   if (!res.ok) {
-    const msg =
-      typeof data === "object"
-        ? data?.error || data?.message || "Error"
-        : String(data);
+    const msg = typeof data === "object" ? data?.error || "Error" : String(data);
     throw new Error(msg);
   }
-
   return data;
 }
-
-export const api = {
-  // Health
-  health() {
-    return request("/health", { method: "GET" });
-  },
-
-  // Auth
-  register(payload) {
-    return request("/auth/register", {
-      method: "POST",
-      body: JSON.stringify(payload),
-    });
-  },
-
-  login(payload) {
-    return request("/auth/login", {
-      method: "POST",
-      body: JSON.stringify(payload),
-    });
-  },
-
-  // Products
-  productsList(token) {
-    return request("/products", {
-      method: "GET",
-      headers: authHeaders(token),
-    });
-  },
-
-  productsCreate(token, payload) {
-    return request("/products", {
-      method: "POST",
-      headers: authHeaders(token),
-      body: JSON.stringify(payload),
-    });
-  },
-};
 
 
