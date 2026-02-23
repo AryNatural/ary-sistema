@@ -1,6 +1,7 @@
 import "dotenv/config";
 import app from "./app.js";
 import { sequelize } from "./db.js";
+import "./models/Product.js";
 
 const PORT = Number(process.env.PORT || 8080);
 const HOST = "0.0.0.0";
@@ -23,3 +24,4 @@ async function start() {
 }
 
 start();
+
