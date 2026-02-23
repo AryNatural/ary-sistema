@@ -2,8 +2,10 @@ import express from "express";
 import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
+
 import authRoutes from "./routes/auth.js";
-import productsRouter from "./routes/products.js";
+import productsRoutes from "./routes/products.js";
+
 const app = express();
 
 app.use(helmet());
@@ -20,9 +22,8 @@ app.use(
 
 app.get("/health", (req, res) => res.json({ ok: true }));
 
-// Rutas
-app.use("/products", productsRouter);
+app.use("/auth", authRoutes);
+app.use("/products", productsRoutes);
 
 export default app;
-
 
