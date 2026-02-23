@@ -21,7 +21,8 @@ app.use(
 app.get("/health", (req, res) => res.json({ ok: true }));
 
 // Rutas
-app.use("/auth", authRoutes);
+app.use("/products", productsRouter);
 
 export default app;
+
 
