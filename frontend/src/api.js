@@ -1,5 +1,10 @@
 export const API_URL = import.meta.env.VITE_API_URL;
 
+// Helpers
+function authHeaders(token) {
+  return token ? { Authorization: `Bearer ${token}` } : {};
+}
+
 async function request(path, options = {}) {
   const res = await fetch(`${API_URL}${path}`, {
     headers: {
@@ -25,32 +30,28 @@ async function request(path, options = {}) {
   return data;
 }
 
-function authHeaders(token) {
-  return token ? { Authorization: `Bearer ${token}` } : {};
-}
-
 export const api = {
   // Health
   health() {
-    return request("/health");
+    return request("/health", { method: "GET" });
   },
 
   // Auth
-  register(body) {
+  register(payload) {
     return request("/auth/register", {
       method: "POST",
-      body: JSON.stringify(body),
+      body: JSON.stringify(payload),
     });
   },
 
-  login(body) {
+  login(payload) {
     return request("/auth/login", {
       method: "POST",
-      body: JSON.stringify(body),
+      body: JSON.stringify(payload),
     });
   },
 
-  // Products (estas rutas tienen que existir en tu backend)
+  // Products
   productsList(token) {
     return request("/products", {
       method: "GET",
@@ -58,25 +59,13 @@ export const api = {
     });
   },
 
-  productsCreate(token, body) {
+  productsCreate(token, payload) {
     return request("/products", {
       method: "POST",
       headers: authHeaders(token),
-      body: JSON.stringify(body),
+      body: JSON.stringify(payload),
     });
-  },
-
-  productsDelete(token, id) {
-    return request(`/products/${id}`, {
-      method: "DELETE",
-      headers: authHeaders(token),
-    });
-    productsList(token) {
-  return request("/products", {
-    method: "GET",
-    headers: authHeaders(token),
-  });
-}
   },
 };
+
 
