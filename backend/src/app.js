@@ -1,4 +1,3 @@
-import "dotenv/config";
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";
@@ -15,15 +14,13 @@ const corsOrigin = process.env.CORS_ORIGIN || "*";
 app.use(
   cors({
     origin: corsOrigin === "*" ? true : corsOrigin,
-    credentials: true
+    credentials: true,
   })
 );
 
 app.get("/health", (req, res) => res.json({ ok: true }));
 
-// ✅ AQUÍ queda habilitado:
-// POST /auth/register
-// POST /auth/login
+// Rutas
 app.use("/auth", authRoutes);
 
 export default app;
