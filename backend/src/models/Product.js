@@ -6,16 +6,16 @@ export const Product = sequelize.define(
   {
     id: { type: DataTypes.UUID, defaultValue: DataTypes.UUIDV4, primaryKey: true },
 
-    name: { type: DataTypes.STRING, allowNull: false },
-    sku: { type: DataTypes.STRING, allowNull: true, unique: true },
+    sku: { type: DataTypes.STRING(80), allowNull: false, unique: true },
+    nombre: { type: DataTypes.STRING(150), allowNull: false },
+    categoria: { type: DataTypes.STRING(80), allowNull: false, defaultValue: "General" },
 
-    price: { type: DataTypes.DECIMAL(10, 2), allowNull: false, defaultValue: 0 },
-    stock: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 0 },
+    presentacion_ml: { type: DataTypes.INTEGER, allowNull: true },
 
-    active: { type: DataTypes.BOOLEAN, defaultValue: true },
+    costo: { type: DataTypes.DECIMAL(12, 2), allowNull: false, defaultValue: 0 },
+    precio: { type: DataTypes.DECIMAL(12, 2), allowNull: false, defaultValue: 0 },
+
+    activo: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: true },
   },
-  {
-    tableName: "products",
-    timestamps: true,
-  }
+  { tableName: "products" }
 );
