@@ -71,5 +71,12 @@ export const api = {
       method: "DELETE",
       headers: authHeaders(token),
     });
+    productsList(token) {
+  return request("/products", {
+    method: "GET",
+    headers: authHeaders(token),
+  });
+}
   },
 };
+
