@@ -26,4 +26,3 @@ app.use("/auth", authRoutes);
 app.use("/products", productsRoutes);
 
 export default app;
-
