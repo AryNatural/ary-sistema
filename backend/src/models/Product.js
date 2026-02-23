@@ -13,10 +13,8 @@ export const Product = sequelize.define(
     nombre: { type: DataTypes.STRING, allowNull: false },
     categoria: { type: DataTypes.STRING, allowNull: false, defaultValue: "General" },
     presentacionMl: { type: DataTypes.INTEGER, allowNull: true },
-    costo: { type: DataTypes.DECIMAL(10, 2), allowNull: false, defaultValue: 0 },
-    precio: { type: DataTypes.DECIMAL(10, 2), allowNull: false, defaultValue: 0 },
+    costo: { type: DataTypes.FLOAT, allowNull: false, defaultValue: 0 },
+    precio: { type: DataTypes.FLOAT, allowNull: false, defaultValue: 0 },
   },
-  {
-    tableName: "products",
-  }
+  { tableName: "products" }
 );
