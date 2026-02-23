@@ -1,12 +1,15 @@
 import "dotenv/config";
 import app from "./app.js";
 import { sequelize } from "./db.js";
+
+// Importa modelos para que Sequelize los registre
+import "./models/User.js";
 import "./models/Product.js";
 
-const PORT = Number(process.env.PORT || 8080);
+const PORT = Number(process.env.PORT || 5000);
 const HOST = "0.0.0.0";
 
-async function start() {
+(async () => {
   try {
     await sequelize.authenticate();
     console.log("✅ DB conectada correctamente");
@@ -18,10 +21,7 @@ async function start() {
       console.log(`✅ API corriendo en http://${HOST}:${PORT}`);
     });
   } catch (err) {
-    console.error("❌ Error conectando/levantando API:", err);
+    console.error("❌ Error conectando a la DB:", err);
     process.exit(1);
   }
-}
-
-start();
-
+})();
