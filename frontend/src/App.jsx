@@ -68,7 +68,11 @@ const list = await api("/products", {
 
       setMsg("✅ Registro exitoso. Token guardado.");
       setTab("products");
-      await loadProducts(data?.token || token || localStorage.getItem("ary_token"));
+      await api("/products", {
+  method: "POST",
+  headers: { Authorization: `Bearer ${token}` },
+  body: JSON.stringify({ sku, nombre, categoria, presentacionMl, costo, precio })
+});
     } catch (e) {
       setError(e.message || "Error registrando");
     }
@@ -372,4 +376,5 @@ const preStyle = {
   borderRadius: 10,
   overflowX: "auto",
 };
+
 
