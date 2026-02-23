@@ -46,6 +46,9 @@ app.get("/api", (req, res) => {
   res.json({ ok: true, service: "ary-sistema-backend" });
 });
 
+app.use("/auth", authRoutes);
+
+export default app;
 
 
 
