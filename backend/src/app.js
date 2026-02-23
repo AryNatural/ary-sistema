@@ -1,9 +1,9 @@
-﻿import express from "express";
+import "dotenv/config";
+import express from "express";
 import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
-import productsRouter from "./routes/products.js";
-import authRoutes from "./routes-auth.js";
+import authRoutes from "./routes/auth.js";
 ...
 app.use("/auth", authRoutes);
 
@@ -45,6 +45,7 @@ app.get("/api/test", (req, res) => {
 app.get("/api", (req, res) => {
   res.json({ ok: true, service: "ary-sistema-backend" });
 });
+
 
 
 
