@@ -1,33 +1,25 @@
 import "dotenv/config";
 import app from "./app.js";
 import { sequelize } from "./db.js";
-import "./models/index.js";
 
-
-const PORT = process.env.PORT || 5000;
+const PORT = Number(process.env.PORT || 8080);
 const HOST = "0.0.0.0";
 
-(async () => {
+async function start() {
   try {
     await sequelize.authenticate();
     console.log("✅ DB conectada correctamente");
 
-    // Crea tablas si no existen (para empezar rápido)
-    // OJO: luego lo ideal es migraciones, pero por ahora sirve.
-    await sequelize.sync({ alter: true });
+    await sequelize.sync();
     console.log("✅ Tablas sincronizadas (sync)");
 
     app.listen(PORT, HOST, () => {
       console.log(`✅ API corriendo en http://${HOST}:${PORT}`);
     });
   } catch (err) {
-    console.error("❌ Error conectando/sincronizando la DB:", err);
+    console.error("❌ Error conectando/levantando API:", err);
     process.exit(1);
   }
-})();
-if (process.env.NODE_ENV !== "production") {
-  await sequelize.sync();
 }
 
-
-
+start();
